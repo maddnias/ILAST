@@ -41,7 +41,7 @@ namespace ILAST.Visitor
             throw new NotImplementedException();
         }
 
-        public override void Visit(ConditionalExpression expression)
+        public override void Visit(ConditionalBranchExpression expression)
         {
             throw new NotImplementedException();
         }
@@ -51,7 +51,7 @@ namespace ILAST.Visitor
             throw new NotImplementedException();
         }
 
-        public override void Visit(UnconditionalBranchStatement statement)
+        public override void Visit(UnconditionalBranchExpression statement)
         {
             throw new NotImplementedException();
         }
@@ -69,6 +69,11 @@ namespace ILAST.Visitor
                 if (tcv.ResultType != statement.Target.Parameters[i].Type.ToReflectionType())
                     throw new Exception("Parameter type mismatch");
             }
+        }
+
+        public override void Visit(ForLoopStatement statement)
+        {
+            throw new NotImplementedException();
         }
     }
 }

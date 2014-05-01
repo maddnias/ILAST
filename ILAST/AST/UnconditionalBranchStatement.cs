@@ -1,21 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using de4dot.blocks;
+﻿using System.Collections.Generic;
+using dnlib.DotNet.Emit;
 using ILAST.AST.Base;
-using ILAST.Visitor;
 using ILAST.Visitor.Base;
 
 namespace ILAST.AST
 {
-    public class UnconditionalBranchStatement : Statement
+    public class UnconditionalBranchExpression : Expression
     {
-        public UnconditionalBranchStatement(Instr instr) : base(instr)
+        public UnconditionalBranchExpression(Instruction instr)
+            : base(instr)
         {
         }
 
-        public string Value { get; set; }
+        public Element TargetElement { get; set; }
         public override int ElementSize { get { return 1; } }
-        public override bool CanSimplify { get { return true; } }
+        public override bool CanSimplify { get { return false; } }
 
         public override IEnumerable<Element> RemovableElements
         {
@@ -24,7 +23,7 @@ namespace ILAST.AST
 
         public override void Populate()
         {
-            throw new NotImplementedException();
+            TargetElement = this.ResolveTargetElement();
         }
 
         public override void AcceptVisitor(ElementVisitor visitor)
@@ -34,7 +33,7 @@ namespace ILAST.AST
 
         public override string ToString()
         {
-            return @"""" + Value + @"""";
+            return @"""";
         }
     }
 }

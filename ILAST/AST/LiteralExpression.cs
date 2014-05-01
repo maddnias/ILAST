@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using de4dot.blocks;
+using dnlib.DotNet.Emit;
 using ILAST.AST.Base;
 using ILAST.Visitor.Base;
 
@@ -7,7 +7,7 @@ namespace ILAST.AST
 {
     public class LiteralExpression : Expression
     {
-        public LiteralExpression(Instr instr)
+        public LiteralExpression(Instruction instr)
             : base(instr)
         {
         }

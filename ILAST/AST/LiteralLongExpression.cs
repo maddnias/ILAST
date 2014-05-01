@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using de4dot.blocks;
+using dnlib.DotNet.Emit;
 using ILAST.AST.Base;
-using ILAST.Visitor;
 using ILAST.Visitor.Base;
 
 namespace ILAST.AST
 {
     public class LiteralLongExpression : Expression
     {
-        public LiteralLongExpression(Instr instr)
+        public LiteralLongExpression(Instruction instr)
             : base(instr)
         {
         }

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
-using de4dot.blocks;
-using ILAST.Visitor;
+using dnlib.DotNet.Emit;
 using ILAST.Visitor.Base;
 
 namespace ILAST.AST.Base
@@ -13,9 +12,9 @@ namespace ILAST.AST.Base
         public abstract bool CanSimplify { get; }
         public Element Previous { get; set; }
         public Element Next { get; set; }
-        public Instr AssociatedInstruction { get; set; }
+        public Instruction AssociatedInstruction { get; set; }
 
-        protected Element(Instr instr)
+        protected Element(Instruction instr)
         {
             AssociatedInstruction = instr;
         }

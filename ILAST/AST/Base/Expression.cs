@@ -1,10 +1,11 @@
-﻿using de4dot.blocks;
+﻿using dnlib.DotNet.Emit;
 
 namespace ILAST.AST.Base
 {
     public abstract class Expression : Element
     {
-        protected Expression(Instr instr) : base(instr)
+        protected Expression(Instruction instr)
+            : base(instr)
         {
         }
     }

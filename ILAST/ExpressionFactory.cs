@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using de4dot.blocks;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 using ILAST.AST;
@@ -11,7 +10,7 @@ namespace ILAST
 {
     internal class ExpressionFactory : ElementFactory
     {
-        public override IEnumerable<Element> GetElements(Instr instr, MethodDef method)
+        public override IEnumerable<Element> GetElements(Instruction instr, MethodDef method)
         {
             switch (instr.OpCode.OperandType)
             {
@@ -39,6 +38,12 @@ namespace ILAST
                     break;
 
             }
+
+            if (instr.IsBr())
+                yield return new UnconditionalBranchExpression(instr);
+
+            if (instr.IsConditionalBranch())
+                yield return HandleConditionalBranch(instr, method);
 
             if (instr.IsCall())
                 yield return HandleCall(instr);
@@ -81,12 +86,49 @@ namespace ILAST
                 yield return new BinOpExpression(instr) { Operation = BinOps.Mul };
         }
 
-        static CallStatement HandleCall(Instr instr)
+        private static ConditionalBranchExpression HandleConditionalBranch(Instruction instr, MethodDef method)
+        {
+            var expr = new ConditionalBranchExpression(instr);
+
+            switch (instr.OpCode.Code)
+            {
+                case Code.Bge:
+                case Code.Bge_S:
+                case Code.Bge_Un:
+                case Code.Bge_Un_S:
+                    expr.Operation = ConditionalOps.GreaterThanOrEqual;
+                    break;
+                case Code.Bgt:
+                case Code.Bgt_S:
+                case Code.Bgt_Un:
+                case Code.Bgt_Un_S:
+                    expr.Operation = ConditionalOps.GreaterThan;
+                    break;
+
+                case Code.Ble:
+                case Code.Ble_S:
+                case Code.Ble_Un:
+                case Code.Ble_Un_S:
+                    expr.Operation = ConditionalOps.LessThanOrEqual;
+                    break;
+
+                case Code.Blt:
+                case Code.Blt_S:
+                case Code.Blt_Un:
+                case Code.Blt_Un_S:
+                    expr.Operation = ConditionalOps.LessThan;
+                    break;
+            }
+
+            return expr;
+        }
+
+        static CallStatement HandleCall(Instruction instr)
         {
             return new CallStatement(instr, instr.ResolveCallTarget());
         }
 
-        static VariableExpression HandleLdarg(Instr instr, MethodDef method)
+        static VariableExpression HandleLdarg(Instruction instr, MethodDef method)
         {
             switch (instr.OpCode.Code)
             {
@@ -103,7 +145,7 @@ namespace ILAST
             }
         }
 
-        static VariableExpression HandleStloc(Instr instr, MethodDef method)
+        static VariableExpression HandleStloc(Instruction instr, MethodDef method)
         {
             switch (instr.OpCode.Code)
             {
@@ -120,7 +162,7 @@ namespace ILAST
             }
         }
 
-        static VariableExpression HandleLdloc(Instr instr, MethodDef method)
+        static VariableExpression HandleLdloc(Instruction instr, MethodDef method)
         {
             switch (instr.OpCode.Code)
             {

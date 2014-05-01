@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using de4dot.blocks;
 using dnlib.DotNet;
 using ILAST.AST;
 using ILAST.AST.Base;
@@ -13,12 +12,9 @@ namespace ILAST
         public static MethodDef Method { get; set; }
         public List<Element> Elements { get; set; }
 
-        private List<BlockAnalyzer> BlockAnalyzers { get; set; }
-
         public ILAST(MethodDef method)
         {
             Method = method;
-            BlockAnalyzers = new List<BlockAnalyzer>();
             Elements = new List<Element>();
 
             ProcessMethod();
@@ -28,7 +24,6 @@ namespace ILAST
         {
             Method = method;
             Method.DeclaringType.Module.Context = modCtx;
-            BlockAnalyzers = new List<BlockAnalyzer>();
             Elements = new List<Element>();
 
             ProcessMethod();
@@ -36,34 +31,52 @@ namespace ILAST
 
         void ProcessMethod()
         {
-            PopulateBlockAnalyzers();
             PopulateElements();
+            LinkElements();
             ProcessElements();
             VerifyElements();
         }
 
-        void PopulateBlockAnalyzers()
+        void LinkElements()
         {
-            var blocks = new Blocks(Method).MethodBlocks.GetAllBlocks();
-
-            foreach (var block in blocks)
-                BlockAnalyzers.Add(new BlockAnalyzer(block, Method));
+            for (var i = 0; i < Elements.Count; i++)
+            {
+                if (i != 0)
+                    Elements[i].Previous = Elements[i - 1];
+                if (i != Elements.Count - 1)
+                    Elements[i].Next = Elements[i + 1];
+            }
         }
 
         void PopulateElements()
         {
-            foreach (var analyzer in BlockAnalyzers)
-                Elements.AddRange(analyzer.Elements);
+            var exprFactory = new ExpressionFactory();
+            Elements = Method.Body.Instructions.SelectMany(instr => exprFactory.GetElements(instr, Method)).ToList();
         }
 
         void ProcessElements()
         {
-            foreach (var expr in Elements)
+            for (int i = 0; i < Elements.Count; i++)
             {
+                var expr = Elements[i];
                 if (expr is ReturnExpression)
                 {
                     if (Method.ReturnType.ToReflectionType() != typeof (void))
                         expr.Populate();
+                }
+                else if (expr is ConditionalBranchExpression)
+                {
+                    expr.Populate();
+                    if ((expr as ConditionalBranchExpression).IsForLoop(Method))
+                    {
+                        var branch = expr;
+                        Elements[i] = new ForLoopStatement(expr.AssociatedInstruction);
+                        expr = Elements[i];
+                        (expr as ForLoopStatement).Condition = branch as Expression;
+                        expr.Previous = branch.Previous;
+                        expr.Next = branch.Next;
+                        expr.Populate();
+                    }
                 }
                 else expr.Populate();
             }

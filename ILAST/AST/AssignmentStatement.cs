@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
-using de4dot.blocks;
+using dnlib.DotNet.Emit;
 using ILAST.AST.Base;
-using ILAST.Visitor;
 using ILAST.Visitor.Base;
 
 namespace ILAST.AST
 {
     public class AssignmentStatement : Statement
     {
-        public AssignmentStatement(Instr instr) : base(instr)
+        public AssignmentStatement(Instruction instr)
+            : base(instr)
         {
         }
 
@@ -28,8 +28,8 @@ namespace ILAST.AST
 
         public override void Populate()
         {
-            Value = this.GetPrevious(2);
-            Target = this.GetPrevious(1);
+            Value = this.GetPrevious(2) as Expression;
+            Target = this.GetPrevious(1) as Expression;
         }
 
         public override void AcceptVisitor(ElementVisitor visitor)
@@ -39,7 +39,7 @@ namespace ILAST.AST
 
         public override string ToString()
         {
-            return string.Format("{0} = {1};", Target, Value);
+            return string.Format("{0} = {1}", Target, Value);
         }
 
     }

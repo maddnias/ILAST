@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using de4dot.blocks;
+using dnlib.DotNet.Emit;
 using ILAST.AST.Base;
-using ILAST.Visitor;
 using ILAST.Visitor.Base;
 
 namespace ILAST.AST
@@ -22,7 +21,7 @@ namespace ILAST.AST
 
     public class BinOpExpression : Expression
     {
-        public BinOpExpression(Instr instr)
+        public BinOpExpression(Instruction instr)
             : base(instr)
         {
         }
@@ -44,8 +43,8 @@ namespace ILAST.AST
 
         public override void Populate()
         {
-            Left = this.GetPrevious(2);
-            Right = this.GetPrevious(1);
+            Left = this.GetPrevious(2) as Expression;
+            Right = this.GetPrevious(1) as Expression;
         }
 
         public override void AcceptVisitor(ElementVisitor visitor)

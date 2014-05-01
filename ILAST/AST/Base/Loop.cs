@@ -2,9 +2,9 @@
 
 namespace ILAST.AST.Base
 {
-    public abstract class Statement : Element
+    public abstract class Loop : Statement
     {
-        protected Statement(Instruction instr)
+        protected Loop(Instruction instr)
             : base(instr)
         {
         }

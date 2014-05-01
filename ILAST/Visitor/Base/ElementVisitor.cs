@@ -11,9 +11,10 @@ namespace ILAST.Visitor.Base
         public abstract void Visit(ReturnExpression expression);
         public abstract void Visit(UnaryOpExpression expression);
         public abstract void Visit(VariableExpression expression);
-        public abstract void Visit(ConditionalExpression expression);
+        public abstract void Visit(ConditionalBranchExpression expression);
         public abstract void Visit(AssignmentStatement statement);
-        public abstract void Visit(UnconditionalBranchStatement statement);
+        public abstract void Visit(UnconditionalBranchExpression statement);
         public abstract void Visit(CallStatement statement);
+        public abstract void Visit(ForLoopStatement statement);
     }
 }

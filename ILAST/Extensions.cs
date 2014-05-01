@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using de4dot.blocks;
 using dnlib.DotNet;
 using dnlib.DotNet.Emit;
 using ILAST.AST;
@@ -10,7 +9,57 @@ namespace ILAST
 {
     public static class Extensions
     {
-        public static MethodDef ResolveCallTarget(this Instr instr)
+        public static bool IsForLoop(this ConditionalBranchExpression expr, MethodDef method)
+        {
+            if (!(expr.TargetElement.Previous is UnconditionalBranchExpression)) return false;
+            return (expr.TargetElement as VariableExpression) != null;
+        }
+
+        public static bool IsIncrement(this Expression expr)
+        {
+            if (!(expr is BinOpExpression))
+                return false;
+
+            if ((expr as BinOpExpression).Left is VariableExpression &&
+                (expr as BinOpExpression).Right is LiteralExpression)
+                if (((expr as BinOpExpression).Right as LiteralExpression).Value == 1)
+                    return true;
+            if ((expr as BinOpExpression).Left is LiteralExpression &&
+                (expr as BinOpExpression).Right is VariableExpression)
+                if (((expr as BinOpExpression).Left as LiteralExpression).Value == 1)
+                    return true;
+
+            return false;
+        }
+
+        public static Element ResolveTargetElement(this Expression expr)
+        {
+            if (expr is UnconditionalBranchExpression ||
+                expr is ConditionalBranchExpression)
+            {
+                var targetInstr = expr.AssociatedInstruction.Operand as Instruction;
+
+                //search forward
+                Element cur = expr;
+                while (cur.Next != null)
+                {
+                    cur = cur.Next;
+                    if (cur.AssociatedInstruction == targetInstr)
+                        return cur;
+                }
+                //search backwards
+                while (cur.Previous != null)
+                {
+                    cur = cur.Previous;
+                    if (cur.AssociatedInstruction == targetInstr)
+                        return cur;
+                }
+            }
+
+            return null;
+        }
+
+        public static MethodDef ResolveCallTarget(this Instruction instr)
         {
             if (!instr.IsCall())
                 return null;
@@ -25,13 +74,13 @@ namespace ILAST
             return null;
         }
 
-        public static bool IsCall(this Instr instr)
+        public static bool IsCall(this Instruction instr)
         {
             return instr.OpCode.Code == Code.Call || instr.OpCode.Code == Code.Calli ||
                    instr.OpCode.Code == Code.Callvirt;
         }
 
-        public static Expression GetPrevious(this Element element, int count)
+        public static Element GetPrevious(this Element element, int count)
         {
             var realCount = count;
             var cur = element;
@@ -48,7 +97,7 @@ namespace ILAST
                 cur = cur.Previous;
             }
 
-            return cur as Expression;
+            return cur;
         }
 
         public static Expression SafeGetExpression(this List<Element> elements, int start, int count)

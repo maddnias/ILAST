@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using de4dot.blocks;
+using dnlib.DotNet.Emit;
 using ILAST.AST.Base;
-using ILAST.Visitor;
 using ILAST.Visitor.Base;
 
 namespace ILAST.AST
@@ -15,14 +14,14 @@ namespace ILAST.AST
 
     public class UnaryOpExpression : Expression
     {
-        public UnaryOpExpression(Instr instr)
+        public UnaryOpExpression(Instruction instr)
             : base(instr)
         {
         }
 
         public override void Populate()
         {
-            Value = this.GetPrevious(1);
+            Value = this.GetPrevious(1) as Expression;
         }
 
         public Expression Value { get; set; }

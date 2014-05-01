@@ -1,22 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using de4dot.blocks;
+﻿using System.Collections.Generic;
+using dnlib.DotNet.Emit;
 using ILAST.AST.Base;
-using ILAST.Visitor;
 using ILAST.Visitor.Base;
 
 namespace ILAST.AST
 {
     public class ReturnExpression : Expression
     {
-        public ReturnExpression(Instr instr)
+        public ReturnExpression(Instruction instr)
             : base(instr)
         {
         }
 
         public override void Populate()
         {
-            ReturnValue = this.GetPrevious(1);
+            ReturnValue = this.GetPrevious(1) as Expression;
         }
 
         public Expression ReturnValue { get; set; }

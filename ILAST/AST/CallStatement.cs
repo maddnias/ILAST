@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using de4dot.blocks;
 using dnlib.DotNet;
+using dnlib.DotNet.Emit;
 using ILAST.AST.Base;
-using ILAST.Visitor;
 using ILAST.Visitor.Base;
 
 namespace ILAST.AST
@@ -15,7 +13,7 @@ namespace ILAST.AST
         public MethodDef Target { get; set; }
         public IList<Expression> ArgumentExpressions { get; set; }
 
-        public CallStatement(Instr instr, MethodDef target)
+        public CallStatement(Instruction instr, MethodDef target)
             : base(instr)
         {
             Target = target;

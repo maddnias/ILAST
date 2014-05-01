@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using de4dot.blocks;
+﻿using System.Collections.Generic;
 using dnlib.DotNet;
+using dnlib.DotNet.Emit;
 using ILAST.AST.Base;
-using ILAST.Visitor;
 using ILAST.Visitor.Base;
 
 namespace ILAST.AST
@@ -13,7 +11,7 @@ namespace ILAST.AST
         internal MethodDef Method { get; set; }
         private Variable _variable;
 
-        public VariableExpression(Instr instr, MethodDef method)
+        public VariableExpression(Instruction instr, MethodDef method)
             : base(instr)
         {
             Method = method;

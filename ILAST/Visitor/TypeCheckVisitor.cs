@@ -67,9 +67,9 @@ namespace ILAST.Visitor
             ResultType = expression.Variable.Type;
         }
 
-        public override void Visit(ConditionalExpression expression)
+        public override void Visit(ConditionalBranchExpression expression)
         {
-            throw new NotImplementedException();
+
         }
 
         public override void Visit(AssignmentStatement statement)
@@ -78,7 +78,7 @@ namespace ILAST.Visitor
             statement.Target.AcceptVisitor(this);
         }
 
-        public override void Visit(UnconditionalBranchStatement statement)
+        public override void Visit(UnconditionalBranchExpression statement)
         {
 
         }
@@ -86,6 +86,11 @@ namespace ILAST.Visitor
         public override void Visit(CallStatement statement)
         {
             ResultType = statement.Target.ReturnType.ToReflectionType();
+        }
+
+        public override void Visit(ForLoopStatement statement)
+        {
+           
         }
     }
 }
