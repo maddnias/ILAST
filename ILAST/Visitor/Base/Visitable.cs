@@ -1,0 +1,3 @@
+﻿namespace ILAST.Visitor.Base
+{
+}
